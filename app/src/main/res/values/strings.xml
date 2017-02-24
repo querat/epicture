@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Epicture</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="connect">Connect</string>
+    <string-array name="items">
+        <item>Imgur</item>
+        <item>Flickr</item>
+    </string-array>
 </resources>
