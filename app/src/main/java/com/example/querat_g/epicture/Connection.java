@@ -50,16 +50,27 @@ public class Connection extends MainActivity {
         imgApi.setImageResource(idImg);                                                             // set img res
     }
 
+
+    /***
+     * manages button behavior
+     */
     private void buttonManager(){
-        btnConnect.setOnClickListener(new View.OnClickListener() {
+        btnConnect.setOnClickListener(new View.OnClickListener() {                                  // ok button management
             @Override
-            public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "ok button", Toast.LENGTH_LONG).show();
+            public void onClick(View view) {                                                        // onclick
+                if (txtPassword.getText().toString().matches("") ||                                 // check empty field
+                        txtUsername.getText().toString().matches("")){
+                    Toast.makeText(getApplicationContext(), "Empty field", Toast.LENGTH_LONG).show();
+                }
+                else {
+                    Toast.makeText(getApplicationContext(), "ok button", Toast.LENGTH_LONG).show();
+                }
+
             }
         });
-        btnCancel.setOnClickListener(new View.OnClickListener() {
+        btnCancel.setOnClickListener(new View.OnClickListener() {                                   // cancel button management
             @Override
-            public void onClick(View view) {
+            public void onClick(View view) {                                                        // onclick
                 Toast.makeText(getApplicationContext(), "cancel button", Toast.LENGTH_LONG).show();
             }
         });
