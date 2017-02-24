@@ -52,9 +52,19 @@
         android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:layout_below="@id/editViewConnectPassword"
-        android:id="@+id/ok_button"
+        android:id="@+id/buttonConnectOk"
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:layout_alignEnd="@id/editViewConnectPassword"
+        />
+
+    <Button
+        android:text="@string/cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_below="@id/editViewConnectPassword"
+        android:layout_toStartOf="@id/buttonConnectOk"
+        android:id="@+id/buttonConnectCancel"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
         />
 
     <android.support.v4.widget.DrawerLayout
