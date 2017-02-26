@@ -64,6 +64,8 @@ public class Connection extends MainActivity {
                 }
                 else {
                     Toast.makeText(getApplicationContext(), "ok button", Toast.LENGTH_LONG).show();
+                    Status = 1;
+                    finish();
                 }
 
             }
@@ -72,6 +74,7 @@ public class Connection extends MainActivity {
             @Override
             public void onClick(View view) {                                                        // onclick
                 Toast.makeText(getApplicationContext(), "cancel button", Toast.LENGTH_LONG).show();
+                finish();
             }
         });
     }

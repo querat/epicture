@@ -3,10 +3,12 @@ package com.example.querat_g.epicture;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.SystemClock;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
@@ -16,23 +18,50 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends Activity {
-    protected String[] drawerItemsList;
-    protected ListView Drawer;
-    protected DrawerLayout drawerLayout;
-    protected ActionBarDrawerToggle DrawerToggle;
+import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
+public class MainActivity extends Activity{
+
+
+    protected String[]              drawerItemsList;
+    protected ListView              Drawer;
+    protected DrawerLayout          drawerLayout;
+    protected ActionBarDrawerToggle DrawerToggle;
+    protected static int                   Status;
+    protected ArrayList<ApiImages>  imgs = new ArrayList<ApiImages>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         loadDrawer();
+        Status = 0;
     }
 
-    /***
-     * manages left-side drawer interactions
-     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (Status != 0){                                                                           // user is connected to api service
+            try {
+                imgs = new LoadImage().execute().get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+            Toast.makeText(getApplicationContext(), "list = ", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), imgs.get(0).getName(), Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), imgs.get(1).getName(), Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), imgs.get(2).getName(), Toast.LENGTH_LONG).show();
+        }
+        else
+            Toast.makeText(getApplicationContext(), "plop", Toast.LENGTH_LONG).show();
+    }
+
+        /***
+         * manages left-side drawer interactions
+         */
     protected class MyDrawerItemClickListener implements
             ListView.OnItemClickListener {
         @Override
