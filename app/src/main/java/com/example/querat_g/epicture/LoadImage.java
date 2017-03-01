@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -17,10 +18,17 @@ import java.util.ArrayList;
  */
 
 public class LoadImage extends AsyncTask<Void, Integer, ArrayList<ApiImages>>  {
-    private ArrayList<ApiImages> img = new ArrayList<ApiImages>();
+    public ArrayList<ApiImages> img = new ArrayList<ApiImages>();
+    private ProgressDialog dialog;
+
+    public LoadImage(MainActivity activity){
+        dialog = new ProgressDialog(activity);
+    }
 
     protected void onPreExecute(){
         super.onPreExecute();
+        dialog.setMessage("Loading gallery");
+        dialog.show();
     }
 
     /***
@@ -37,8 +45,12 @@ public class LoadImage extends AsyncTask<Void, Integer, ArrayList<ApiImages>>  {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
+/*        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }*/
         return img;
-
     }
 
     protected void onProgressUpdate(Integer ... values){
@@ -46,6 +58,9 @@ public class LoadImage extends AsyncTask<Void, Integer, ArrayList<ApiImages>>  {
     }
 
     protected void onPostExecute(ArrayList<ApiImages> img){
+        if (dialog.isShowing()) {
+            dialog.dismiss();
+        }
 
     }
 

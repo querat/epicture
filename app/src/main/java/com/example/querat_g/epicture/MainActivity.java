@@ -40,7 +40,7 @@ public class MainActivity extends Activity{
     protected DrawerLayout          drawerLayout;
     protected ActionBarDrawerToggle DrawerToggle;
     protected static int            Status;
-    protected ArrayList<ApiImages>  imgs = new ArrayList<ApiImages>();
+    protected ArrayList<ApiImages>  imgs;
     protected Gallery               gallery;
     protected ProgressBar           pb;
 
@@ -61,15 +61,9 @@ public class MainActivity extends Activity{
     public void onResume() {
         super.onResume();
         if (Status != 0){                                                                           // user is connected to api service
-            try {
-                pb.setVisibility(View.VISIBLE);
-                imgs = new LoadImage().execute().get();
-                pb.setVisibility(View.INVISIBLE);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
+            LoadImage ld = new LoadImage(this);
+            ld.execute();
+            imgs = new ArrayList<>(ld.img);
             gallery = (Gallery) findViewById(R.id.gallery1);
             gallery.setAdapter(new ImageAdapter(this));
             gallery.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -164,7 +158,6 @@ public class MainActivity extends Activity{
         public ImageAdapter(Context c)
         {
             context = c;
-            // sets a grey background; wraps around the images
             TypedArray a = obtainStyledAttributes(R.styleable.MyGallery);
             itemBackground = a.getResourceId(R.styleable.MyGallery_android_galleryItemBackground, 0);
             a.recycle();
