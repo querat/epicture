@@ -1,35 +1,49 @@
 package com.example.querat_g.epicture;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.content.res.TypedArray;
 import android.os.SystemClock;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.Gallery;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
+@SuppressWarnings("deprecation")
 
 public class MainActivity extends Activity{
-
 
     protected String[]              drawerItemsList;
     protected ListView              Drawer;
     protected DrawerLayout          drawerLayout;
     protected ActionBarDrawerToggle DrawerToggle;
-    protected static int                   Status;
+    protected static int            Status;
     protected ArrayList<ApiImages>  imgs = new ArrayList<ApiImages>();
+    protected Gallery               gallery;
+    protected ProgressBar           pb;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +51,10 @@ public class MainActivity extends Activity{
         setContentView(R.layout.activity_main);
         loadDrawer();
         Status = 0;
+        pb = (ProgressBar) findViewById(R.id.progressBar);
+        pb.setVisibility(View.INVISIBLE);
+//        spinner = new ProgressBar(this);
+//        spinner.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -44,19 +62,30 @@ public class MainActivity extends Activity{
         super.onResume();
         if (Status != 0){                                                                           // user is connected to api service
             try {
+                pb.setVisibility(View.VISIBLE);
                 imgs = new LoadImage().execute().get();
+                pb.setVisibility(View.INVISIBLE);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {
                 e.printStackTrace();
             }
-            Toast.makeText(getApplicationContext(), "list = ", Toast.LENGTH_LONG).show();
-            Toast.makeText(getApplicationContext(), imgs.get(0).getName(), Toast.LENGTH_LONG).show();
-            Toast.makeText(getApplicationContext(), imgs.get(1).getName(), Toast.LENGTH_LONG).show();
-            Toast.makeText(getApplicationContext(), imgs.get(2).getName(), Toast.LENGTH_LONG).show();
+            gallery = (Gallery) findViewById(R.id.gallery1);
+            gallery.setAdapter(new ImageAdapter(this));
+            gallery.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                    ImageView imageView = (ImageView) findViewById(R.id.image1);
+                    imageView.setImageBitmap(imgs.get(position).getImage());
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+                    ImageView imageView = (ImageView) findViewById(R.id.image1);
+                    imageView.setImageResource(R.drawable.appareil_photo);
+                }
+            });
         }
-        else
-            Toast.makeText(getApplicationContext(), "plop", Toast.LENGTH_LONG).show();
     }
 
         /***
@@ -96,10 +125,10 @@ public class MainActivity extends Activity{
      */
     private void drawerManagement(){
         DrawerToggle = new ActionBarDrawerToggle(
-                this,                  /* host Activity */
-                drawerLayout,         /* DrawerLayout object */
-                R.string.drawer_open,  /* "open drawer" description */
-                R.string.drawer_close  /* "close drawer" description */
+                this,
+                drawerLayout,
+                R.string.drawer_open,
+                R.string.drawer_close
         ) {
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
@@ -126,4 +155,39 @@ public class MainActivity extends Activity{
         DrawerToggle.onConfigurationChanged(newConfig);
     }
 
+    /***
+     * Adapter used by upper gallery
+     */
+    public class ImageAdapter extends BaseAdapter {
+        private Context context;
+        private int itemBackground;
+        public ImageAdapter(Context c)
+        {
+            context = c;
+            // sets a grey background; wraps around the images
+            TypedArray a = obtainStyledAttributes(R.styleable.MyGallery);
+            itemBackground = a.getResourceId(R.styleable.MyGallery_android_galleryItemBackground, 0);
+            a.recycle();
+        }
+        // returns the number of images
+        public int getCount() {
+            return imgs.size();
+        }
+        // returns the ID of an item
+        public Object getItem(int position) {
+            return position;
+        }
+        // returns the ID of an item
+        public long getItemId(int position) {
+            return position;
+        }
+        // returns an ImageView view
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ImageView imageView = new ImageView(context);
+            imageView.setImageBitmap(imgs.get(position).getImage());
+            imageView.setLayoutParams(new Gallery.LayoutParams(100, 100));
+            imageView.setBackgroundResource(itemBackground);
+            return imageView;
+        }
+    }
 }
