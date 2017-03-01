@@ -20,8 +20,10 @@ import java.util.ArrayList;
 public class LoadImage extends AsyncTask<Void, Integer, ArrayList<ApiImages>>  {
     public ArrayList<ApiImages> img = new ArrayList<ApiImages>();
     private ProgressDialog dialog;
+    private MainActivity activity;
 
     public LoadImage(MainActivity activity){
+        this.activity = activity;
         dialog = new ProgressDialog(activity);
     }
 
@@ -61,7 +63,8 @@ public class LoadImage extends AsyncTask<Void, Integer, ArrayList<ApiImages>>  {
         if (dialog.isShowing()) {
             dialog.dismiss();
         }
-
+        this.activity.setList(img);
+        this.activity.manageGallery();
     }
 
 }

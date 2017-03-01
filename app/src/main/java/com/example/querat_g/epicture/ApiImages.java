@@ -32,6 +32,12 @@ public class ApiImages {
         }
     }
 
+    public ApiImages(ApiImages img){
+        this.id = img.getId();
+        this.name = img.getName();
+        this.image = img.getImage();
+    }
+
     public int getId() {
         return id;
     }

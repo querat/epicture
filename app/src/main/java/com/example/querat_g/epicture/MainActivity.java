@@ -40,9 +40,8 @@ public class MainActivity extends Activity{
     protected DrawerLayout          drawerLayout;
     protected ActionBarDrawerToggle DrawerToggle;
     protected static int            Status;
-    protected ArrayList<ApiImages>  imgs;
+    protected ArrayList<ApiImages>  imgs = new ArrayList<ApiImages>();
     protected Gallery               gallery;
-    protected ProgressBar           pb;
 
 
     @Override
@@ -51,34 +50,13 @@ public class MainActivity extends Activity{
         setContentView(R.layout.activity_main);
         loadDrawer();
         Status = 0;
-        pb = (ProgressBar) findViewById(R.id.progressBar);
-        pb.setVisibility(View.INVISIBLE);
-//        spinner = new ProgressBar(this);
-//        spinner.setVisibility(View.INVISIBLE);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         if (Status != 0){                                                                           // user is connected to api service
-            LoadImage ld = new LoadImage(this);
-            ld.execute();
-            imgs = new ArrayList<>(ld.img);
-            gallery = (Gallery) findViewById(R.id.gallery1);
-            gallery.setAdapter(new ImageAdapter(this));
-            gallery.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                    ImageView imageView = (ImageView) findViewById(R.id.image1);
-                    imageView.setImageBitmap(imgs.get(position).getImage());
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> adapterView) {
-                    ImageView imageView = (ImageView) findViewById(R.id.image1);
-                    imageView.setImageResource(R.drawable.appareil_photo);
-                }
-            });
+            new LoadImage(this).execute();
         }
     }
 
@@ -126,11 +104,9 @@ public class MainActivity extends Activity{
         ) {
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-                Toast.makeText(getApplicationContext(), "closed", Toast.LENGTH_LONG).show();
             }
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                Toast.makeText(getApplicationContext(), "opened", Toast.LENGTH_LONG).show();
                 Drawer.bringToFront();
                 drawerLayout.requestLayout();
             }
@@ -181,6 +157,33 @@ public class MainActivity extends Activity{
             imageView.setLayoutParams(new Gallery.LayoutParams(100, 100));
             imageView.setBackgroundResource(itemBackground);
             return imageView;
+        }
+    }
+
+    public void setList(ArrayList<ApiImages> list) {
+        imgs = new ArrayList<>(list);
+        for (int i = 0; i + 1 < list.size(); i++){
+            imgs.set(i, new ApiImages(list.get(i)));
+        }
+    }
+
+    public void manageGallery(){
+        gallery = (Gallery) findViewById(R.id.gallery1);
+        gallery.setAdapter(new ImageAdapter(this));
+        gallery.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                ImageView imageView = (ImageView) findViewById(R.id.image1);
+                imageView.setImageBitmap(imgs.get(position).getImage());
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+        if (imgs.size() == 0){
+            ImageView imageView = (ImageView) findViewById(R.id.image1);
+            imageView.setImageResource(R.drawable.appareil_photo);
         }
     }
 }
