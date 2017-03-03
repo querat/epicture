@@ -1,20 +1,14 @@
 package com.example.querat_g.epicture;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-/**
- * Created by bellia_n on 26/02/17.
+/***
+ * Asynchronously fetch the image gallery of user of connected API
  */
 
 public class LoadImage extends AsyncTask<Void, Integer, ArrayList<ApiImages>>  {
@@ -51,11 +45,6 @@ public class LoadImage extends AsyncTask<Void, Integer, ArrayList<ApiImages>>  {
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }
-        /*        try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
                 break;
             case 2 :
                 //TODO FLICKR
@@ -67,7 +56,6 @@ public class LoadImage extends AsyncTask<Void, Integer, ArrayList<ApiImages>>  {
     }
 
     protected void onProgressUpdate(Integer ... values){
-        super.onProgressUpdate(values);
     }
 
     protected void onPostExecute(ArrayList<ApiImages> img){

@@ -63,9 +63,14 @@ public class MainActivity extends Activity{
         upButton = (FloatingActionButton) findViewById(R.id.uploadButton);
     }
 
+    /***
+     * Called when API-related activities are used
+     * @param requestCode activity expected
+     * @param resultCode  activity return code
+     * @param data        contain data returned by the called activity
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {                 // used at end of each activityResult
-
         if (requestCode == API_CONNECTION) {                                                        // connection intent
             if(resultCode == Activity.RESULT_OK){
                 Bundle dBundle = data.getExtras();
@@ -80,20 +85,22 @@ public class MainActivity extends Activity{
             String[] filePathColumn = { MediaStore.Images.Media.DATA };
             Cursor cursor = getContentResolver().query(selectedImage,
                     filePathColumn, null, null, null);
-            cursor.moveToFirst();
-            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            String picturePath = cursor.getString(columnIndex);
-            cursor.close();
-
-            //TODO setup upload here
-//            imageView.setImageBitmap(BitmapFactory.decodeFile(picturePath));
-
+            if (cursor != null) {
+                cursor.moveToFirst();
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                String picturePath = cursor.getString(columnIndex);
+                cursor.close();
+                new UploadImage(this, picturePath).execute();                                       // launch asyncTask to upload pic to API gallery
+                new LoadImage(this, Status).execute();                                              // launch asyncTask to load API gallery
+                upButton.setVisibility(View.VISIBLE);
+                upButton.setOnClickListener(new uploadListener());
+            }
         }
     }
 
-        /***
-         * manages left-side drawer interactions
-         */
+    /***
+     * manages left-side drawer interactions
+     */
     protected class MyDrawerItemClickListener implements
             ListView.OnItemClickListener {
         @Override
@@ -191,6 +198,10 @@ public class MainActivity extends Activity{
         }
     }
 
+    /***
+     * Called by {@link LoadImage} in onPostExecute
+     * Deep copy {@param list} to class variable imgs
+     */
     public void setList(ArrayList<ApiImages> list) {
         imgs = new ArrayList<>(list);
         for (int i = 0; i + 1 < list.size(); i++){
@@ -198,9 +209,13 @@ public class MainActivity extends Activity{
         }
     }
 
+    /***
+     * Called by {@link LoadImage} in onPostExecute
+     * Set and show image gallery from API
+     */
     public void manageGallery(){
         gallery = (Gallery) findViewById(R.id.gallery1);
-        gallery.setAdapter(new ImageAdapter(this));
+        gallery.setAdapter(new ImageAdapter(this));                                                 // use adapter to populate gallery
         gallery.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
@@ -212,12 +227,15 @@ public class MainActivity extends Activity{
 
             }
         });
-        if (imgs.size() == 0){
+        if (imgs.size() == 0){                                                                      // gallery is empty
             ImageView imageView = (ImageView) findViewById(R.id.image1);
             imageView.setImageResource(R.drawable.appareil_photo);
         }
     }
 
+    /***
+     * Called when upButton is pressed
+     */
     private class uploadListener implements
     FloatingActionButton.OnClickListener {
         @Override
@@ -227,7 +245,6 @@ public class MainActivity extends Activity{
                     android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
             startActivityForResult(i, PHONE_BROWSING);
-            Toast.makeText(getApplicationContext(), "" + Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DCIM + "/", Toast.LENGTH_LONG).show();
         }
     }
 }

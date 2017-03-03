@@ -16,8 +16,8 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-/**
- * Created by bellia_n on 21/02/17.
+/***
+ * Display a log in screen to connect app to API
  */
 
 public class Connection extends Activity{
