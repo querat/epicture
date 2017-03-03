@@ -23,9 +23,10 @@ import android.widget.Toast;
 public class Connection extends Activity{
     private ImageView imgApi;
     private int       idImg;
-    private Intent    intent, returnIntent;
+    private Intent    intent;
     private EditText  txtUsername, txtPassword;
     private Button    btnConnect, btnCancel;
+    private String    api;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,9 +41,9 @@ public class Connection extends Activity{
      */
     private void loadClassVar(){
         intent = getIntent();
-        returnIntent = new Intent();
+        api = intent.getStringExtra("api");
         imgApi = (ImageView) findViewById(R.id.imageViewApi);
-        idImg = getResources().getIdentifier(intent.getStringExtra("api") + "_logo",
+        idImg = getResources().getIdentifier(api + "_logo",
                 "drawable", getPackageName());                                                      // get img res
         txtPassword = (EditText) findViewById(R.id.editViewConnectPassword);                        // get password EditText
         txtUsername = (EditText) findViewById(R.id.editViewConnectUsername);                        // get username EditText
@@ -65,7 +66,10 @@ public class Connection extends Activity{
                 }
                 else {
                     Toast.makeText(getApplicationContext(), "ok button", Toast.LENGTH_LONG).show();
-                    intent.putExtra("result", 1);
+                    if (api.matches("imgur"))
+                        intent.putExtra("service", 1);
+                    else if(api.matches("flickr"))
+                        intent.putExtra("service", 2);
                     setResult(RESULT_OK, intent);
                     finish();
                 }
@@ -76,7 +80,7 @@ public class Connection extends Activity{
             @Override
             public void onClick(View view) {                                                        // onclick
                 Toast.makeText(getApplicationContext(), "cancel button", Toast.LENGTH_LONG).show();
-                setResult(Activity.RESULT_CANCELED, returnIntent);
+                setResult(Activity.RESULT_CANCELED, intent);
                 finish();
             }
         });

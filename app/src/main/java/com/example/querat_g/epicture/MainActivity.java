@@ -6,8 +6,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.database.Cursor;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Environment;
 import android.os.SystemClock;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -47,6 +51,7 @@ public class MainActivity extends Activity{
     protected Gallery               gallery;                                                        // upper imgs gallery
     protected FloatingActionButton  upButton;                                                       // upload button
     static final int API_CONNECTION = 1;
+    static final int PHONE_BROWSING = 2;
 
 
     @Override
@@ -59,41 +64,33 @@ public class MainActivity extends Activity{
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {                 // used at end of each activityResult
 
-        if (requestCode == API_CONNECTION) {
+        if (requestCode == API_CONNECTION) {                                                        // connection intent
             if(resultCode == Activity.RESULT_OK){
-                Bundle MBuddle = data.getExtras();
-                Status = MBuddle.getInt("result", 0);
-                new LoadImage(this, Status).execute();                                                   // launch asyncTask to load API gallery
+                Bundle dBundle = data.getExtras();
+                Status = dBundle.getInt("service", 0);
+                new LoadImage(this, Status).execute();                                              // launch asyncTask to load API gallery
                 upButton.setVisibility(View.VISIBLE);
-            }
-            else if (resultCode == Activity.RESULT_CANCELED) {
+                upButton.setOnClickListener(new uploadListener());
             }
         }
-    }//onActivityResult
-/*
-    @Override
-    public void onResume() {
-        super.onResume();
-        Toast.makeText(getApplicationContext(), "wololo", Toast.LENGTH_SHORT).show();
-        if (Status == 1){                                                                           // user is connected to api service
-            new LoadImage(this, 0).execute();                                                       // launch asyncTask to load API gallery
-            upButton.setVisibility(View.VISIBLE);
-            upButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent i = new Intent(
-                            Intent.ACTION_PICK,
-                            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        if (requestCode == PHONE_BROWSING && resultCode == RESULT_OK && null != data) {             // upload intent
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+            Cursor cursor = getContentResolver().query(selectedImage,
+                    filePathColumn, null, null, null);
+            cursor.moveToFirst();
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            String picturePath = cursor.getString(columnIndex);
+            cursor.close();
 
-                    startActivityForResult(i, 1);
-                    Toast.makeText(getApplicationContext(), "" + Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DCIM + "/", Toast.LENGTH_LONG).show();
-                }
-            });
+            //TODO setup upload here
+//            imageView.setImageBitmap(BitmapFactory.decodeFile(picturePath));
+
         }
     }
-*/
+
         /***
          * manages left-side drawer interactions
          */
@@ -218,6 +215,19 @@ public class MainActivity extends Activity{
         if (imgs.size() == 0){
             ImageView imageView = (ImageView) findViewById(R.id.image1);
             imageView.setImageResource(R.drawable.appareil_photo);
+        }
+    }
+
+    private class uploadListener implements
+    FloatingActionButton.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            Intent i = new Intent(
+                    Intent.ACTION_PICK,
+                    android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+            startActivityForResult(i, PHONE_BROWSING);
+            Toast.makeText(getApplicationContext(), "" + Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DCIM + "/", Toast.LENGTH_LONG).show();
         }
     }
 }
