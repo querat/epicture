@@ -20,10 +20,10 @@ import android.widget.Toast;
  * Created by bellia_n on 21/02/17.
  */
 
-public class Connection extends MainActivity {
+public class Connection extends Activity{
     private ImageView imgApi;
     private int       idImg;
-    private Intent    intent;
+    private Intent    intent, returnIntent;
     private EditText  txtUsername, txtPassword;
     private Button    btnConnect, btnCancel;
 
@@ -32,7 +32,6 @@ public class Connection extends MainActivity {
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.connection);
         loadClassVar();                                                                             // load class variables
-        loadDrawer();                                                                               // load left drawer
         buttonManager();
     }
 
@@ -41,6 +40,7 @@ public class Connection extends MainActivity {
      */
     private void loadClassVar(){
         intent = getIntent();
+        returnIntent = new Intent();
         imgApi = (ImageView) findViewById(R.id.imageViewApi);
         idImg = getResources().getIdentifier(intent.getStringExtra("api") + "_logo",
                 "drawable", getPackageName());                                                      // get img res
@@ -65,7 +65,8 @@ public class Connection extends MainActivity {
                 }
                 else {
                     Toast.makeText(getApplicationContext(), "ok button", Toast.LENGTH_LONG).show();
-                    Status = 1;
+                    intent.putExtra("result", 1);
+                    setResult(RESULT_OK, intent);
                     finish();
                 }
 
@@ -75,6 +76,7 @@ public class Connection extends MainActivity {
             @Override
             public void onClick(View view) {                                                        // onclick
                 Toast.makeText(getApplicationContext(), "cancel button", Toast.LENGTH_LONG).show();
+                setResult(Activity.RESULT_CANCELED, returnIntent);
                 finish();
             }
         });

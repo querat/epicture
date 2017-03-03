@@ -6,7 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.os.Environment;
 import android.os.SystemClock;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -21,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.Gallery;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -35,13 +38,15 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends Activity{
 
-    protected String[]              drawerItemsList;
-    protected ListView              Drawer;
+    protected String[]              drawerItemsList;                                                // Drawer connection list
+    protected ListView              Drawer;                                                         // left-side drawer
     protected DrawerLayout          drawerLayout;
     protected ActionBarDrawerToggle DrawerToggle;
-    protected static int            Status;
-    protected ArrayList<ApiImages>  imgs = new ArrayList<ApiImages>();
-    protected Gallery               gallery;
+    protected static int            Status;                                                         // API connection status
+    protected ArrayList<ApiImages>  imgs = new ArrayList<ApiImages>();                                      // list of api imgs
+    protected Gallery               gallery;                                                        // upper imgs gallery
+    protected FloatingActionButton  upButton;                                                       // upload button
+    static final int API_CONNECTION = 1;
 
 
     @Override
@@ -50,16 +55,45 @@ public class MainActivity extends Activity{
         setContentView(R.layout.activity_main);
         loadDrawer();
         Status = 0;
+        upButton = (FloatingActionButton) findViewById(R.id.uploadButton);
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == API_CONNECTION) {
+            if(resultCode == Activity.RESULT_OK){
+                Bundle MBuddle = data.getExtras();
+                Status = MBuddle.getInt("result", 0);
+                new LoadImage(this, Status).execute();                                                   // launch asyncTask to load API gallery
+                upButton.setVisibility(View.VISIBLE);
+            }
+            else if (resultCode == Activity.RESULT_CANCELED) {
+            }
+        }
+    }//onActivityResult
+/*
+    @Override
     public void onResume() {
         super.onResume();
-        if (Status != 0){                                                                           // user is connected to api service
-            new LoadImage(this).execute();
+        Toast.makeText(getApplicationContext(), "wololo", Toast.LENGTH_SHORT).show();
+        if (Status == 1){                                                                           // user is connected to api service
+            new LoadImage(this, 0).execute();                                                       // launch asyncTask to load API gallery
+            upButton.setVisibility(View.VISIBLE);
+            upButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent i = new Intent(
+                            Intent.ACTION_PICK,
+                            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+                    startActivityForResult(i, 1);
+                    Toast.makeText(getApplicationContext(), "" + Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DCIM + "/", Toast.LENGTH_LONG).show();
+                }
+            });
         }
     }
-
+*/
         /***
          * manages left-side drawer interactions
          */
@@ -71,7 +105,7 @@ public class MainActivity extends Activity{
             drawerLayout.closeDrawer(Drawer);
             Intent intent = new Intent(getApplicationContext(), Connection.class);
             intent.putExtra("api", clickedItem.toLowerCase());
-            startActivity(intent);
+            startActivityForResult(intent, API_CONNECTION);
         }
     }
 
