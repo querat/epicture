@@ -6,6 +6,9 @@
     <string name="cancel">Cancel</string>
     <string name="drawer_open">open</string>
     <string name="drawer_close">close</string>
+    <string name="delete">delete</string>
+    <string name="ad_fav">add to favorite</string>
+    <string name="del_fav">delete from favorite</string>
     <string-array name="items">
         <item>Imgur</item>
         <item>Flickr</item>

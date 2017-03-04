@@ -1,6 +1,7 @@
 package com.example.querat_g.epicture;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -38,6 +39,11 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
+
+import static android.R.attr.onClick;
+import static com.example.querat_g.epicture.R.id.gallery1;
+import static com.example.querat_g.epicture.R.id.imageView;
+
 @SuppressWarnings("deprecation")
 
 public class MainActivity extends Activity{
@@ -50,6 +56,7 @@ public class MainActivity extends Activity{
     protected ArrayList<ApiImages>  imgs = new ArrayList<ApiImages>();                                      // list of api imgs
     protected Gallery               gallery;                                                        // upper imgs gallery
     protected FloatingActionButton  upButton;                                                       // upload button
+    protected int                   selectedImgPos;
     static final int API_CONNECTION = 1;
     static final int PHONE_BROWSING = 2;
 
@@ -223,7 +230,9 @@ public class MainActivity extends Activity{
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
                 ImageView imageView = (ImageView) findViewById(R.id.image1);
+                imageView.setOnLongClickListener(new imageLongClickListener());
                 imageView.setImageBitmap(imgs.get(position).getImage());
+                selectedImgPos = position;
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
@@ -232,6 +241,7 @@ public class MainActivity extends Activity{
         });
         if (imgs.size() == 0){                                                                      // gallery is empty
             ImageView imageView = (ImageView) findViewById(R.id.image1);
+            imageView.setOnLongClickListener(new imageLongClickListener());
             imageView.setImageResource(R.drawable.appareil_photo);
         }
     }
@@ -248,6 +258,51 @@ public class MainActivity extends Activity{
                     android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
             startActivityForResult(i, PHONE_BROWSING);
+        }
+    }
+
+    private class imageLongClickListener implements View.OnLongClickListener {
+        @Override
+        public boolean onLongClick(View v) {
+            final Dialog dialog = new Dialog(getApplicationContext());
+            dialog.setContentView(R.layout.image_menu);
+            dialog.setTitle("Picture management");
+            Button cancelButton = (Button) dialog.findViewById(R.id.dialPicCancelButton);
+            cancelButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                }
+            });
+            Button delButton = (Button) dialog.findViewById(R.id.dialPicDelButton);
+            delButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //TODO implement delete asyncTask
+                }
+            });
+            if (imgs.get(selectedImgPos).getFavorite()){
+                Button favButton = (Button) dialog.findViewById(R.id.dialDelFavButton);
+                favButton.setVisibility(View.VISIBLE);
+                favButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        //TODO implement favorite management asyncTask
+                    }
+                });
+            }
+            else {
+                Button favButton = (Button) dialog.findViewById(R.id.dialAddFavButton);
+                favButton.setVisibility(View.VISIBLE);
+                favButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        //TODO implement favorite management asyncTask
+                    }
+                });
+            }
+            dialog.show();
+            return false;
         }
     }
 }

@@ -30,6 +30,7 @@ public class UploadImage extends AsyncTask<Void, String, Boolean> {
         dialog.setMessage("Loading gallery");
         dialog.show();
     }
+    
     @Override
     protected Boolean doInBackground(Void... voids) {
 
