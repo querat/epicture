@@ -15,10 +15,11 @@ import java.net.URL;
 
 public class ApiImages {
 
-    private int     id;
-    private String  name;
-    private String title;
-    private Bitmap  image;
+    private int      id;
+    private String   name;
+    private String   title;
+    private Bitmap   image;
+    private Boolean  favorite;
 
     public ApiImages(int _id, String _name, URL url) {
         this.id = _id;
@@ -58,6 +59,8 @@ public class ApiImages {
 
     public String getTitle() {return title;}
 
+    public Boolean getFavorite() {return favorite;}
+
     public void setImage(Bitmap image) {
         this.image = image;
     }
@@ -66,9 +69,11 @@ public class ApiImages {
         this.name = name;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    public void setTitle(String title) {this.title = title;}
+
+    public void setFavorite(Boolean favorite) {this.favorite = favorite;}
+
+
 
 
 }
