@@ -15,11 +15,11 @@ import java.net.URL;
 
 public class ApiImages {
 
-    private int      id;
-    private String   name;
-    private String   title;
-    private Bitmap   image;
-    private Boolean  favorite;
+    private int      id = 0;
+    private String   name = null;
+    private String   title = null;
+    private Bitmap   image = null;
+    private Boolean  favorite = false;
 
     public ApiImages(int _id, String _name, URL url) {
         this.id = _id;
