@@ -1,5 +1,6 @@
 package com.example.querat_g.epicture;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
@@ -16,6 +17,7 @@ public class ApiImages {
 
     private int     id;
     private String  name;
+    private String title;
     private Bitmap  image;
 
     public ApiImages(int _id, String _name, URL url) {
@@ -50,15 +52,23 @@ public class ApiImages {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public Bitmap getImage() {
         return image;
     }
 
+    public String getTitle() {return title;}
+
     public void setImage(Bitmap image) {
         this.image = image;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+
 }

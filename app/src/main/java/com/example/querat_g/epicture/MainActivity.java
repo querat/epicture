@@ -204,8 +204,11 @@ public class MainActivity extends Activity{
      */
     public void setList(ArrayList<ApiImages> list) {
         imgs = new ArrayList<>(list);
-        for (int i = 0; i + 1 < list.size(); i++){
+        for (int i = 0; i + 1 <= list.size(); i++){
             imgs.set(i, new ApiImages(list.get(i)));
+            if (imgs.get(i).getImage() == null){
+                    imgs.get(i).setImage(BitmapFactory.decodeResource(getResources(), R.drawable.appareil_photo));
+            }
         }
     }
 
